@@ -45,7 +45,7 @@ wall "
 		Architecture    : $ARCH
        	CPU physical    : $PCPU
        	vCPU            : $VCPU
-       	Memory Usage    : $RAM_USED/${RAM_TOTAL}MB ($RAM_PERC) # use{} to insert MB correctly
+       	Memory Usage    : $RAM_USED/${RAM_TOTAL}MB ($RAM_PERC)
        	Disk Usage      : $DISK_USED/$DISK_TOTAL ($DISK_PERC)
        	CPU Load        : $CPU_LOAD
        	Last Boot       : $LAST_BOOT
