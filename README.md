@@ -13,3 +13,10 @@ Boot Maintenance Manager
 → grubaa64.efi 
 → Input description, commit changes.
 Boot sequence can be changed.
+
+To retrieve retrieve the signature from the ".qcow2" file:
+open an Image folder inside born2beroot.utm
+(example:
+/Users/dariagoremykina/Library/Containers/com.utmapp.UTM/Data/Documents/born2beroot.utm/Images).
+
+Run 'shasum data.qcow2' command.
