@@ -227,3 +227,18 @@ $ nano monitoring.sh
 ```
 
 Use crontab for script to be able run every 10 minutes:
+
+```
+CRONTAB INSTALLATION
+$ sudo systemctl status cron
+$ systemctl enable cron
+$ sudo crontab -e
+
+*/10 * * * * sh /home/dgoremyk/monitoring.sh
+
+CHECK CRONTAB IS WORKING
+$ sudo crontab -u root -l
+
+DISABLE CRON (for defense)
+$ sudo systemctl disable cron 
+```

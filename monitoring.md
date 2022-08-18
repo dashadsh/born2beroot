@@ -186,7 +186,7 @@ IP_ADDR=$(hostname -I | awk '{print $1}')
 MAC_ADDR=$(ip link show | grep link/ether | awk '{print $2}')
 ```
 
-**SUDO (**Amt. of commands executed with ‘sudo’)
+**SUDO (Amt. of commands executed with ‘sudo’)**
 
 ```
 SUDO_LOG=$(grep COMMAND /var/log/sudo/sudo.log | wc -l)
