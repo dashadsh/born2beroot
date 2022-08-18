@@ -1,27 +1,68 @@
+# vm settings
+
+You must create at least 2 encrypted partitions using LVM:
+
 ```
 CHECK PARTITION
 $ lsblk
+```
 
+AppArmour should run at startup:
+
+```
+TEST APP-ARMOUR
+$ sudo aa-status
+```
+
+In order to install packages update APT (Advanced Packaging Tool):
+
+```
 APT
 $ apt update
 $ apt upgrade
+```
 
-HOW TO SWITCH USER?
-$ su root
-$ su dgoremyk OR exit
-$ su - (login as root)
+Depends on text editor you may install vim or use preinstalled nano:
 
+```
+FOR VIM USERS(optional)
+$ sudo apt install vim
+```
+
+The hostname of your virtual machine must be your login ending with 42 (e.g., dgoremyk42). You will have to modify this hostname during your evaluation:
+
+```
+CHECK HOSTNAME
+$ sudo hostnamectl
+OR
+$ hostnamectl status
+
+CHANGE HOSTNAME
+$ sudo hostnamectl set-hostname <new_hostname> 
+OR
+nano /etc/hostname
+```
+
+To be able execute commands as a root install sudo (You have to install and configure sudo following strict rules, see below):
+
+```
 SUDO INSTALLATION
 $ apt install sudo
 $ sudo --version
+```
 
-SSH CONFIGURATION
-$ sudo apt install openssh-server
-$ sudo systemctl status ssh
-$ sudo nano /etc/ssh/sshd_config
-(here change "Port 22" to "Port 42" (uncommented!) and add "PermitRootLogin no")
-$ sudo systemctl restart ssh (to apply new settings)
+To switch between users:
 
+```
+HOW TO SWITCH USER
+$ su root OR $ su -
+$ su exit (login as a last user before logging in as a root)
+$ su dgoremyk
+```
+
+Add user to sudo group:
+
+```
 ADD USER TO SUDO GROUP
 $ sudo usermod -aG sudo <username>
 $ getent group sudo
@@ -29,41 +70,116 @@ OR
 $ sudo visudo ($nano /etc/sudoers)
 add "dgoremyk   ALL=(ALL:ALL) ALL"
 
-$ sudo whoami (check if it worked)
+CHECK IF IT WORKED
+$ sudo whoami
+```
 
+Create a new group (’dgoremyk42’ in my case) and add ‘dgoremyk’ user to it:
+
+```
 CREATE GROUP AND ADD USER
 $ addgroup dgoremyk42
 $ getent group dgoremyk42
-$ sudo usermod -aG dgoremyk42 dgoremyk
+$ sudo usermod -aG dgoremyk42 <username>
 
-OPTIONAL
+CHECK USER BELONG TO GROUPS
+$ groups sudo
+$ groups dgoremyk
+```
+
+Optional commands for reboot and shutdown:
+
+```
 $ sudo shutdown now
 $ sudo reboot
+```
 
-SYSTEM SNAPSHOT (OPTIONAL)
+SSH will be running on port 4242 only. It must be not possible to connect using SSH as a root:
 
-ADDING PORT SETTING TO UTM
+```
+SSH CONFIGURATION
+$ sudo apt install openssh-server
+$ sudo systemctl status ssh
+$ sudo nano /etc/ssh/sshd_config
+
+change "Port 22" to "Port 42" (uncommented!) 
+add "PermitRootLogin no"
+
+APPLY NEW SETTINGS
+$ sudo systemctl restart ssh
+```
+
+Configure UFW firewall, leave only 4242 port open:
+
+```
+UFW INSTALLATION
+$ apt install ufw
+$ ufw status
+$ ufw enable
+$ ufw status
+
+UFW STATUS
+$ sudo ufw status verbose
+
+CHANGE UFW SETTINGS
+$ sudo ufw default deny incoming
+$ sudo ufw default allow outgoing
+$ ufw allow 4242
+```
+
+Before we can connect to VM from another machine using SSH, there should be some settings done in UTM.
+
+```
 open VM settings->network
-network mode->"emulated VLAN"
-port forward->new
-guest port->4242
-host port->4242
+from 'network mode'->select 'emulated VLAN'
+from 'port forward'-> select 'new'
+guest port-> enter '4242'
+host port-> enter '4242'
+```
 
-SSH CONNECTION FROM HOST TERMINAL
+Establish SSH connection from host machine. Open terminal:
+
+```
 $ ssh <username>@localhost -p 4242
 enter password (for <username> user)
 exit (if needed)
+```
 
-CHECK USER BELONG TO GROUPS
-$ groups sudo dgoremyk (or "groups sudo", "groups user" - dgoremyk should appear in sudo group)
+Set up strong password policy:
 
-EDIT HOSTNAME
-$ sudo hostnamectl (check hostname) 
-$ sudo hostnamectl set-hostname <new_hostname> (change hostname)
-OR
-nano /etc/hostname
-$ hostnamectl status
+```
+SET UP PASSWORD EXPIRATION POLICY
+$ nano /etc/login.defs
+PASS_MAX_DAYS 30
+PASS_MIN_DAYS 2
+PASS_WARN_AGE 7
 
+(If the /var/log/sudo directory doesn’t exist, you might have to mkdir sudo in /var/log/)
+
+APPLY NEW SETTINGS
+$ sudo chage -M 30 <username/root>
+$ sudo chage -m 2 <username/root>
+$ sudo chage -W 7 <username/root>
+
+CHECK THAT SETTINGS WERE APPLIED
+$ sudo chage -l <username/root>
+
+INSTALL PACKAGE CONTROLLING PASSWORD QUALITY
+$ sudo apt install libpam-pwquality
+
+ADD NEW PASSWORD RULES
+$ nano /etc/pam.d/common-password (or edit /etc/security/pwquality.conf)
+password        requisite	pam_pwquality.so retry=3 maxrepeat=3 minlen=10 dcredit=-1 ucredit=-1 reject_username difok=7 enforce_for_root
+(how to create different dw policies?)
+
+CHANGE PASSWORD
+$passwd user
+$passwd root
+```
+
+Implement strong configuration for sudo group. 
+
+```
 SUDO SETTINGS
 $ sudo visudo 
 Defaults     passwd_tries=3
@@ -73,77 +189,41 @@ Defaults     log_input
 Defaults     log_output
 Defaults     requiretty (the TTY mode has to be enabled for security reasons)
 
-$ nano /var/log/sudo/sudo.log (to test if logs are present)
+TEST IF SUDO LOGS ARE PRESENT
+$ nano /var/log/sudo/sudo.log
+```
 
-TTY (kind of multiple desktops)
+Change some TTY settings (optionally):
+
+```
+TTY SETTINGS (optional)
 $ nano /etc/systemd/logind.conf
 
 NAutoVTs=6 (uncomment)
 ReserveVT=6 (uncomment)
+```
 
-UFW (FIREWALL)
+Set up monitoring.sh:
 
-$ apt install ufw
-$ ufw status
-$ ufw enable
-$ ufw status
-
-$ sudo ufw status verbose
-
-$ sudo ufw default deny incoming
-$ sudo ufw default allow outgoing
-
-$ ufw allow 4242
-
-PASSWORDS
-$ nano /etc/login.defs
-PASS_MAX_DAYS 30
-PASS_MIN_DAYS 2
-PASS_WARN_AGE 7
-
-(If the /var/log/sudo directory doesn’t exist, 
-we might have to mkdir sudo in /var/log/)
-
-$ sudo chage -M 30 <username/root>
-$ sudo chage -m 2 <username/root>
-$ sudo chage -W 7 <username/root>
-$ sudo chage -l <username/root>
-
-$ sudo apt install libpam-pwquality
-
-$ nano /etc/pam.d/common-password (or edit /etc/security/pwquality.conf)
-password        requisite	pam_pwquality.so retry=3 maxrepeat=3 minlen=10 dcredit=-1 ucredit=-1 reject_username difok=7 enforce_for_root
-(how to create different dw policies?)
-
-$passwd user
-$passwd root
-
-TEST APP-ARMOUR
-$ sudo aa-status
-
-??? ADDUSER/USERADD
-adduser - user/group/password
-useradd - user only
-
-FOR SCRIPT
+```
+INSTALL NET-TOOLS(package is a collection of programs for controlling the network subsystem of the Linux kernel.)
 $ apt-get install net-tools
+
+CREATE SCRIPT
 $ su <username>
 $ cd ~/
 $ touch monitoring.sh
 $ ls -la monitoring.sh
+
+GIVE THE SCRIPT EXECUTABLE RIGHTS
 $ chmod +x ./monitoring.sh OR chmod 755 monitoring.sh
 $ ls -la monitoring.sh
 
-CRONTAB
-$ sudo systemctl status cron
-$ systemctl enable cron (optional "sudo systemctl disable cron")
-$ sudo crontab -e
-*/10 * * * * sh /home/dgoremyk/monitoring.sh
-
-FORCE THE SCRIPT
+FORCE SCROPT EXECUTION
 $ sudo bash monitoring.sh
 
-MONITORING.SH
-$ nano monitoring.sh       
-
+EDIT SCRIPT
+$ nano monitoring.sh 
 ```
+
+Use crontab for script to be able run every 10 minutes:
