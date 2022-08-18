@@ -41,7 +41,7 @@ MAC_ADDR=$(ip link show | grep link/ether | awk '{print $2}')
 # Amount commands executed with sudo
 SUDO_LOG=$(grep COMMAND /var/log/sudo/sudo.log | wc -l)
 
-wall -n " 
+wall " 
 		Architecture    : $ARCH
        	CPU physical    : $PCPU
        	vCPU            : $VCPU
