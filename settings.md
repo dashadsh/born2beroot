@@ -1,10 +1,20 @@
-# vm settings
+# VM settings (M1)
 
 You must create at least 2 encrypted partitions using LVM:
 
 ```
 CHECK PARTITION
 $ lsblk
+```
+
+To be able execute commands as a root install sudo (You have to install and configure sudo following strict rules, see below):
+
+```
+SUDO INSTALLATION (switch to the root first)
+$ su root OR $ su -
+
+$ apt install sudo
+$ sudo --version
 ```
 
 AppArmour should run at startup:
@@ -22,41 +32,12 @@ $ apt update
 $ apt upgrade
 ```
 
-Depends on text editor you may install vim or use preinstalled nano:
-
-```
-FOR VIM USERS(optional)
-$ sudo apt install vim
-```
-
-The hostname of your virtual machine must be your login ending with 42 (e.g., dgoremyk42). You will have to modify this hostname during your evaluation:
-
-```
-CHECK HOSTNAME
-$ sudo hostnamectl
-OR
-$ hostnamectl status
-
-CHANGE HOSTNAME
-$ sudo hostnamectl set-hostname <new_hostname> 
-OR
-nano /etc/hostname
-```
-
-To be able execute commands as a root install sudo (You have to install and configure sudo following strict rules, see below):
-
-```
-SUDO INSTALLATION
-$ apt install sudo
-$ sudo --version
-```
-
 To switch between users:
 
 ```
 HOW TO SWITCH USER
 $ su root OR $ su -
-$ su exit (login as a last user before logging in as a root)
+$ su exit (switch to the last user before logging in as a root)
 $ su dgoremyk
 ```
 
@@ -78,13 +59,34 @@ Create a new group (’dgoremyk42’ in my case) and add ‘dgoremyk’ user to 
 
 ```
 CREATE GROUP AND ADD USER
-$ addgroup dgoremyk42
+$ sudo addgroup dgoremyk42
 $ getent group dgoremyk42
 $ sudo usermod -aG dgoremyk42 <username>
 
-CHECK USER BELONG TO GROUPS
-$ groups sudo
+CHECK TO WHICH GROUPS BELONGS THE USER
+$ groups root
 $ groups dgoremyk
+```
+
+Depends on text editor you may install vim or use preinstalled nano:
+
+```
+FOR VIM USERS(optional)
+$ sudo apt install vim
+```
+
+The hostname of your virtual machine must be your login ending with 42 (e.g., dgoremyk42). You will have to modify this hostname during your evaluation:
+
+```
+CHECK HOSTNAME
+$ sudo hostnamectl
+OR
+$ hostnamectl status
+
+CHANGE HOSTNAME
+$ sudo hostnamectl set-hostname <new_hostname> 
+OR
+nano /etc/hostname
 ```
 
 Optional commands for reboot and shutdown:
@@ -219,7 +221,7 @@ GIVE THE SCRIPT EXECUTABLE RIGHTS
 $ chmod +x ./monitoring.sh OR chmod 755 monitoring.sh
 $ ls -la monitoring.sh
 
-FORCE SCROPT EXECUTION
+FORCE SCRIPT EXECUTION
 $ sudo bash monitoring.sh
 
 EDIT SCRIPT
@@ -242,3 +244,11 @@ $ sudo crontab -u root -l
 DISABLE CRON (for defense)
 $ sudo systemctl disable cron 
 ```
+
+LINKS
+
+pwquality
+
+[https://www.systutorials.com/docs/linux/man/5-pwquality.conf/](https://www.systutorials.com/docs/linux/man/5-pwquality.conf/)
+
+[https://linux.die.net/man/5/pwquality.conf](https://linux.die.net/man/5/pwquality.conf)

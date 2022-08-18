@@ -1,4 +1,4 @@
-# [monitoring.sh](http://monitoring.sh)
+# monitoring script (M1)
 
 SIC! ‘Ctrl + L’ cleares shell
 
