@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Architecture of operating system and its kernel version
 ARCH=$(uname -a)
 
@@ -43,15 +42,15 @@ MAC_ADDR=$(ip link show | grep link/ether | awk '{print $2}')
 SUDO_LOG=$(grep COMMAND /var/log/sudo/sudo.log | wc -l)
 
 wall -n " 
-       Architecture    : $ARCH
-       CPU physical    : $PCPU
-       vCPU            : $VCPU
-       Memory Usage    : $RAM_USED/${RAM_TOTAL}MB ($RAM_PERC) # use{} to insert MB correctly
-       Disk Usage      : $DISK_USED/$DISK_TOTAL ($DISK_PERC)
-       CPU Load        : $CPU_LOAD
-       Last Boot       : $LAST_BOOT
-       LVM use         : $LVM
-       Connections TSP : $TCP established
-			 User log        : $USER_LOG
-       Network         : IP $IP_ADDR ($MAC_ADDR)
-       Sudo            : $SUDO_LOG commands executed"
+		Architecture    : $ARCH
+       	CPU physical    : $PCPU
+       	vCPU            : $VCPU
+       	Memory Usage    : $RAM_USED/${RAM_TOTAL}MB ($RAM_PERC) # use{} to insert MB correctly
+       	Disk Usage      : $DISK_USED/$DISK_TOTAL ($DISK_PERC)
+       	CPU Load        : $CPU_LOAD
+       	Last Boot       : $LAST_BOOT
+       	LVM use         : $LVM
+       	Connections TSP : $TCP established
+		User log        : $USER_LOG
+       	Network         : IP $IP_ADDR ($MAC_ADDR)
+       	Sudo            : $SUDO_LOG commands executed"
