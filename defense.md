@@ -11,11 +11,12 @@ A: It's easier to install and configure than CentOS
 (and i haven't use CentOS before)
 
 Q: Basic differences between CentOS and Debian
-CentOS	                                      Debian
-rebuild from Red Hat commercial distribution	build by independent developers
-more user-friendly	                          not so user-friendly
-very stable, less updates	                    stable, more updates
-few packages	                                huge amount of packages
+CentOS	                                         Debian
+rebuild from Red Hat commercial distribution	 build by independent developers
+more user-friendly	                             not so user-friendly
+very stable, less updates	                     stable, more updates
+few packages	                                 huge amount of packages
+
 Q: What is virtual machine?
 A: A Virtual Machine (VM) is a compute resource that uses software instead of a physical computer to run programs and deploy
 apps. Each virtual machine runs its own operating system and functions separately from the other VMs, even when they are all

@@ -2,19 +2,42 @@
 
 Project was done on M1 Mac.
 
-- Partition
+**PARTITION**
+
+AUTOMATED
 
 In case of automated partition, 2 boot partitions will be created: /boot, /boot/efi plus crypto partition with LVM.
 
-Apparently creating EFI partition would be enough - but it opens GNU-GRUB shell on a startup. Using ‘exit’ command bootloader should be configured: Boot Maintenance Manager → Boot Options → Add Boot Option → NO VOLUME LABEL → EFI → debian → grubaa64.efi → Input description, commit changes. Boot sequence can be changed.
+MANUAL USING EFI BOOT PARTITION ONLY
 
-Manual partition with creating 2 boot partition works.
+Debian 11 arm64 cd image boots and installs just fine under UTM (QEMU) on an Apple M1 Mac, but when the VM reboots you’ll be thrown to the UEFI screen instead of seeing the usual GRUB boot menu with no clue as to what the problem might be.
 
-- Full virtualization vs. paravirtualization
+Here’s a workaround that will let you boot from the install disk again.
+
+- Type ‘exit’ in shell
+- Go to Boot Maintenance Manager
+- Boot Options
+- Add Boot Option
+- Select the volume, it should be the only volume there
+- Select EFI
+- Select debian
+- Select grubaa64.efi
+- Give the Boot Option a description
+- Commit your changes
+
+Now go back and change the boot order so that the newly created Boot Option is at the top of the list.
+
+Thats it, your Debian VM should now boot and stay bootable between restarts.
+
+MANUAL USING 2 BOOT PARTITIONS
+
+Manual partition with creating 2 boot partition works as well.
+
+**VIRTUALIZATION VS. PARAVIRTUALIZATION**
 
 Partitions will be displayed as 'vda' disks.
 
-- Signature
+**SIGNATURE**
 
 To retrieve retrieve the signature from the ".qcow2" file: open an Image folder inside born2beroot.utm (example: /Users/dariagoremykina/Library/Containers/com.utmapp.UTM/Data/Documents/born2beroot.utm/Images).
 
